@@ -1,0 +1,47 @@
+<mat-toolbar color="primary"  textColor="blue" >
+    <mat-toolbar-row>
+    <span>DamascenoAPI</span>
+    <span class="example-spacer"></span>
+  
+    <button mat-button [routerLink]="['/login']">Acessar</button>
+    <button mat-button [routerLink]="['/register']">Registrar</button>
+   
+    </mat-toolbar-row>
+  
+  </mat-toolbar>
+
+<mat-sidenav-container>
+    <mat-sidenav-content>
+      <form [formGroup]="myForm" (ngSubmit)="submitForm()" novalidate>
+        
+        <!-- Name 
+        <mat-form-field class="example-full-width">
+          <input matInput placeholder="Nome" formControlName="loginName">
+        </mat-form-field> -->
+  
+        <!-- Email -->
+        <mat-form-field class="example-full-width">
+          <input matInput placeholder="E-mail" formControlName="email">
+        </mat-form-field>
+
+         <!-- Senha -->
+        <mat-form-field class="example-full-width">
+            <input matInput type="password" placeholder="Senha" formControlName="senha">
+          </mat-form-field>
+
+         <!--   <mat-form-field class="example-full-width">
+            <mat-label>Senha</mat-label>
+            <input matInput [type]="hide ? 'password' : 'text'" formControlName="loginPassword" name="loginPassword">
+            <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+            <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+          </mat-form-field> -->
+         
+        <!-- Entrar -->
+        <div class="button-wrapper">
+          <button mat-flat-button color="primary">Entrar</button>
+        </div>
+  
+      </form>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
