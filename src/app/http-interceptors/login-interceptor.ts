@@ -1,45 +1,25 @@
+import { HTTP_INTERCEPTORS, HttpEvent } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {
-    HttpInterceptor, HttpRequest, HttpHandler, HttpErrorResponse
-} from '@angular/common/http';
-import { throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { Observable } from 'rxjs';
-import { LoginService } from '../services/login.service';
+import { HttpInterceptor, HttpHandler, HttpRequest } from '@angular/common/http';
 
+import { TokenStorageService } from '../services/token-storage.service';
+import { Observable } from 'rxjs';
+
+const TOKEN_HEADER_KEY = 'x-access-token';
 @Injectable()
 export class LoginInterceptor implements HttpInterceptor {
+  constructor(private token: TokenStorageService) { }
 
-  constructor(
-    private loginService: LoginService
-  ) { }
-
-  intercept(req: HttpRequest<any>, next: HttpHandler) {
-
-    const token = this.loginService.getAuthorizationToken();
-    let request: HttpRequest<any> = req;
-    if (token && !this.loginService.isTokenExpired(token)) {
-      request = req.clone({
-        headers: req.headers.set('Authorization', `Bearer ${token}`)
-      });
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    let authReq = req;
+    const token = this.token.getToken();
+    if (token != null) {
+       authReq = req.clone({ headers: req.headers.set(TOKEN_HEADER_KEY, token) });
     }
-    
-    return next.handle(request)
-      .pipe(
-        catchError(this.handleError)
-      );
-  }
-
-  private handleError(error: HttpErrorResponse) {
-    if (error.error instanceof ErrorEvent) {
-      // Erro de client-side ou de rede
-      console.error('Ocorreu um erro:', error.error.message);
-    } else {
-      // Erro retornando pelo backend
-      console.error(
-        `Código do erro ${error.status}, ` +
-        `Erro: ${JSON.stringify(error.error)}`);
-    }
-    return throwError('Ocorreu um erro, tente novamente');
+    return next.handle(authReq);
   }
 }
+
+export const authInterceptorProviders = [
+  { provide: HTTP_INTERCEPTORS, useClass: LoginInterceptor, multi: true }
+];

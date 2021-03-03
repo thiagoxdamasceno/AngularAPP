@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
 import { LoginService } from '../services/login.service';
+import { TokenStorageService} from '../services/token-storage.service';
 
 @Component({
   selector: 'app-login',
@@ -9,29 +8,42 @@ import { LoginService } from '../services/login.service';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
+  form: any = {
+    email: null,
+    senha: null
+  };
+  isLoggedIn = false;
+  isLoginFailed = false;
+  errorMessage = '';
 
-  constructor(
-    private fb: FormBuilder,
-    private loginService : LoginService, // NEW COM GUARD
-    private router: Router  // NEW COM GUARD
-  ) { }
+  constructor(private loginService: LoginService, private tokenStorage: TokenStorageService) { }
 
   ngOnInit(): void {
-   this.myForm = this.fb.group({
-      email: [''],
-      senha: [''] 
-    })
+    if (this.tokenStorage.getToken()) {
+      this.isLoggedIn = true;
+    }
   }
 
-  public myForm: FormGroup;
+  onSubmit(): void {
+    const { email, senha } = this.form;
 
-  async submitForm() {
-    try {
-      const result = await this.loginService.postLogin(this.myForm.getRawValue());
-      this.router.navigate(['']);
-    } catch (error) {
-      console.error(error);
-    }
-  } 
+    this.loginService.login(email, senha).subscribe(
+      data => {
+        this.tokenStorage.saveToken(data.accessToken);
+        this.tokenStorage.saveUser(data);
 
+        this.isLoginFailed = false;
+        this.isLoggedIn = true;
+        this.reloadPage();
+      },
+      err => {
+        this.errorMessage = err.error.message;
+        this.isLoginFailed = true;
+      }
+    );
+  }
+
+  reloadPage(): void {
+    window.location.reload();
+  }
 }

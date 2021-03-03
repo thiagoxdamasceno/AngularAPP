@@ -19,4 +19,5 @@ export class PlanService {
   public getPlans(){
     return this.http.get(`${this.SERVER_URL}/planos`);
   }
+  
 }

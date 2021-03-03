@@ -1,48 +1,82 @@
-<mat-toolbar color="primary"  textColor="blue" >
-  <mat-toolbar-row>
-  <span>DamascenoAPI</span>
-  <span class="example-spacer"></span>
-
-  <button mat-button [routerLink]="['/login']">Acessar</button>
-  <button mat-button [routerLink]="['/register']">Registrar</button>
- <!-- <button mat-button (click)="{}">Logout</button> -->
-
-  </mat-toolbar-row>
-
-</mat-toolbar>
-
-<div fxLayout="row" fxLayoutAlign="space-evenly stretch" style="padding: 2%;">
-    <form class="=example-form" [formGroup]="registerForm" (ngSubmit)="createUser()" novalidate>
-  
-          <!-- Name -->
-          <mat-form-field class="example-full-width">
-            <input matInput placeholder="Nome" formControlName="nome">
-          </mat-form-field>
-
-          <!-- Email -->
-          <mat-form-field class="example-full-width">
-            <input matInput placeholder="E-mail" formControlName="email">
-          </mat-form-field>
-
-        <!-- Senha 
-          <mat-form-field class="example-full-width">
-            <mat-label>Senha</mat-label>
-            <input matInput [type]="hide ? 'password' : 'text'" formControlName="senha" name="senha">
-            <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
-            <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-            </button>
-          </mat-form-field> -->
-
-          <!-- Senha -->
-          <mat-form-field class="example-full-width">
-            <input matInput type="password" placeholder="Senha" formControlName="senha">
-          </mat-form-field>
- 
-          <!-- Cadastrar -->
-          <div class="button-wrapper">
-            <button mat-flat-button color="primary">Cadastrar</button>
+<div class="col-md-12">
+  <div class="card card-container">
+    <img
+      id="profile-img"
+      src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
+      class="profile-img-card"
+    />
+    <form
+      *ngIf="!isSuccessful"
+      name="form"
+      (ngSubmit)="f.form.valid && onSubmit()"
+      #f="ngForm"
+      novalidate
+    >
+      <div class="form-group">
+        <label for="nome">Nome</label>
+        <input
+          type="text"
+          class="form-control"
+          name="nome"
+          [(ngModel)]="form.nome"
+          required
+          minlength="3"
+          maxlength="20"
+          #nome="ngModel"
+        />
+        <div class="alert-danger" *ngIf="nome.errors && f.submitted">
+          <div *ngIf="nome.errors.required">Nome é obrigatório!</div>
+          <div *ngIf="nome.errors.minlength">
+            Nome deve conter pelo menos  3 digitos
           </div>
-
+          <div *ngIf="nome.errors.maxlength">
+            Nome nåo pode conter mais que 20 digitos
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="email">E-mail</label>
+        <input
+          type="email"
+          class="form-control"
+          name="email"
+          [(ngModel)]="form.email"
+          required
+          email
+          #email="ngModel"
+        />
+        <div class="alert-danger" *ngIf="email.errors && f.submitted">
+          <div *ngIf="email.errors.required">Email é obrigatório!</div>
+          <div *ngIf="email.errors.email">
+            Email inválido
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="senha">Senha</label>
+        <input
+          type="password"
+          class="form-control"
+          name="senha"
+          [(ngModel)]="form.senha"
+          required
+          minlength="6"
+          #senha="ngModel"
+        />
+        <div class="alert-danger" *ngIf="senha.errors && f.submitted">
+          <div *ngIf="senha.errors.required">Senha é obrigatório!</div>
+          <div *ngIf="senha.errors.minlength">
+            Senha deve conter pelo menos 6 digitos
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <button class="btn btn-primary btn-block" style="background-color: mediumslateblue;" >Cadastrar</button>
+      </div>
     </form>
-</div>
 
+    <div class="alert alert-success" *ngIf="isSuccessful">
+      Cadastro Efetuado com Sucesso!
+    </div>
+  </div>
+</div>

@@ -1,36 +1,39 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { RegisterService } from '../services/register.service';
+import { LoginService } from '../services/login.service';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
 })
-
 export class RegisterComponent implements OnInit {
+  form: any = {
+    nome: null,
+    email: null,
+    senha: null
+  };
+  isSuccessful = false;
+  isSignUpFailed = false;
+  errorMessage = '';
 
-  public registerForm: FormGroup;
-
-  hide = true;
-
-  constructor(
-    private fb: FormBuilder,
-    private rest: RegisterService
-  ) { }
+  constructor(private loginService: LoginService) { }
 
   ngOnInit(): void {
-    this.registerForm = this.fb.group({
-      nome: ['', [Validators.required]],
-      email: ['', [Validators.required]],
-      senha: ['', [Validators.required]]
-    });
   }
 
-  createUser(){
-    this.rest.postRegister(this.registerForm.getRawValue()).subscribe(result => {});
-    //console.log(this.registerForm.value);
-    this.registerForm.reset();
-  }
+  onSubmit(): void {
+    const { nome, email, senha } = this.form;
 
+    this.loginService.register(nome, email, senha).subscribe(
+      data => {
+        console.log(data);
+        this.isSuccessful = true;
+        this.isSignUpFailed = false;
+      },
+      err => {
+        this.errorMessage = err.error.message;
+        this.isSignUpFailed = true;
+      }
+    );
+  }
 }
